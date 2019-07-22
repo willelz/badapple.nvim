@@ -1,11 +1,3 @@
-" badapple
-" Version: 0.0.1
-" Author: skanehira
-" License: MIT
-
-let s:save_cpo = &cpo
-set cpo&vim
-
 " read file to create frames
 function! s:read_file() abort
     let file = globpath(&rtp, 'resources/badapple.txt')
@@ -22,28 +14,29 @@ function! s:read_file() abort
     endfor
 
     return frames
-endfunction
+endfunction:
 
 " play bad apple
 function! badapple#play() abort
     let frames = s:read_file()
-    " popup window
-    if has("patch-8.1.1561")
-        let winid = popup_create("", {
-                    \ 'minheight': '29',
-                    \ 'minwidth': '100',
-                    \  })
+    " Floating Window
+    if has("nvim-0.3.8")
+      let buf = nvim_create_buf(v:false, v:true)
+      let opts = {'relative': 'cursor', 'width': 100, 'height': 29,
+                  \'row': 5, 'col': 5, 'style': 'minimal'}
+      let win = nvim_open_win(buf, 0, opts)
 
-        for frame in frames
-            call popup_settext(winid, frame)
-            redraw!
-            sleep 50ms
-            let key = getchar(0)
-            if key ==# 113
-                break
-            endif
-        endfor
-        call popup_close(winid)
+      for frame in frames
+        call nvim_buf_set_lines(buf, 0, -1, v:true, frame)
+        redraw!
+        sleep 50ms
+        let key = getchar(0)
+        if key ==# 113
+          break
+        endif
+      endfor
+
+      call nvim_win_close(win, v:true)
     else
         new | setlocal buftype=nofile bufhidden=wipe
         for frame in frames
@@ -58,8 +51,3 @@ function! badapple#play() abort
         bw!
     endif
 endfunction
-
-let &cpo = s:save_cpo
-unlet s:save_cpo
-
-" vim:set et:
