@@ -20,7 +20,7 @@ endfunction:
 function! badapple#play() abort
     let frames = s:read_file()
     " Floating Window
-    if has("nvim-0.3.8")
+    if exists('*nvim_buf_set_lines()')
       let buf = nvim_create_buf(v:false, v:true)
       let opts = {'relative': 'cursor', 'width': 100, 'height': 29,
                   \'row': 5, 'col': 5, 'style': 'minimal'}
